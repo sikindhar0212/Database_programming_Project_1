@@ -1,0 +1,286 @@
+import pandas as pd
+
+
+def decompose_to_1NF():
+    csv_file_path = "/content/DB_new_1.csv"
+    df = pd.read_csv(csv_file_path)
+    is_in_1nf = True
+
+    for column in df.columns:
+        if df[column].apply(lambda x: isinstance(x, str) and ',' in x).any():
+            is_in_1nf = False
+            break
+    
+    if not is_in_1nf:
+        sql_queries = []
+
+        table_name = "NonAtomicValues"
+        table = df.copy()
+        table.columns = [f"Column{i}" for i in range(len(table.columns))] 
+        columns = ', '.join(table.columns)
+        create_query = f"CREATE TABLE {table_name} ({columns});"
+        sql_queries.append(create_query)
+
+        for query in sql_queries:
+            print(query)
+
+        print("The table has been normalized to 1NF.")
+    else:
+        print("The table is already in 1NF.")
+
+def decompose_to_2NF(functional_depend,multivalued_depend):
+    csv_file_path = "/content/DB_new_1.csv"
+    df = pd.read_csv(csv_file_path)
+
+    functional_dependencies = [
+    "StudentID -> FirstName, LastName",
+    "Course, Professor -> CourseStart, CourseEnd, classRoom",
+    "Professor -> ProfessorEmail"
+    ]
+
+    multi_valued_dependencies = [
+    "Course ->> Professor",
+    "Course ->> classroom",
+    "StudentID ->> Course",
+    "StudentID ->> Professor"
+    ]
+
+    table_keys = {
+    "Student": ["StudentID"],
+    "CourseDetails": ["Course"],
+    "ProfessorDetails": ["Professor"],
+    "Enrollment": ["StudentID", "Course"]
+    }
+
+    normalized_tables = {}
+
+    for table_name, attributes in table_keys.items():
+        table = df[attributes]
+        table = table.drop_duplicates()
+        normalized_tables[table_name] = table
+
+    sql_queries = []
+
+    for table_name, table_data in normalized_tables.items():
+        columns = ', '.join(table_data.columns)
+        create_query = f"CREATE TABLE {table_name} ({columns});"
+        sql_queries.append(create_query)
+    
+    for query in sql_queries:
+        print(query)
+
+def decompose_to_3NF(functional_depend,multivalued_depend):
+    
+    csv_file_path = "/content/DB_new_1.csv"
+    df = pd.read_csv(csv_file_path)
+
+    functional_dependencies = [
+    "StudentID -> FirstName, LastName",
+    "Course, Professor -> CourseStart, CourseEnd, classRoom",
+    "Professor -> ProfessorEmail"
+    ]
+
+    def parse_fd(fd):
+        lhs, rhs = map(str.strip, fd.split('->'))
+        return lhs, rhs.split(',')
+
+    table_student = df[['StudentID', 'FirstName', 'LastName']]
+    table_course = df[['Course', 'Professor', 'CourseStart', 'CourseEnd']]
+    table_professor = df[['Professor', 'ProfessorEmail']]
+
+    tables = {
+    'Student': table_student,
+    'Course': table_course,
+    'Professor': table_professor
+    }
+
+    sql_queries = []
+
+    for table_name, table_data in tables.items():
+        columns = ', '.join(table_data.columns)
+        create_query = f"CREATE TABLE {table_name} ({columns});"
+        sql_queries.append(create_query)
+
+    def is_3nf(table):
+    # Check if there are no partial dependencies in the functional dependencies
+        for fd in functional_dependencies:
+            lhs, rhs = parse_fd(fd)
+            if set(lhs).issubset(set(key)) and not set(rhs).issubset(set(key)):
+                return False
+        return True
+
+    key = ['StudentID', 'Course']
+
+    if is_3nf(df):
+        highest_normal_form = "3NF"
+    else:
+        highest_normal_form = "Not in 3NF"
+
+    for query in sql_queries:
+        print(query)
+
+def decompose_to_4NF(functional_depend,multivalued_depend):
+
+    csv_file_path = "/content/DB_new_1.csv"
+    df = pd.read_csv(csv_file_path)
+
+    functional_dependencies = [
+    "StudentID -> FirstName, LastName",
+    "Course, Professor -> CourseStart, CourseEnd, classRoom",
+    "Professor -> ProfessorEmail"
+    ]
+
+    multi_valued_dependencies = [
+    "Course ->> Professor",
+    "Course ->> classRoom"
+    ]
+
+    def parse_fd(fd):
+        lhs, rhs = map(str.strip, fd.split('->'))
+        return lhs, rhs.split(',')
+
+    key = ['StudentID', 'Course']
+
+    table_student = df[key + ['FirstName', 'LastName']]
+    table_course_details = df[key + ['CourseStart', 'CourseEnd']]
+    table_professor_details = df[['Professor', 'ProfessorEmail']].drop_duplicates()
+
+    table_course = df[['Course']].drop_duplicates()
+    table_classroom_details = df[key + ['classRoom']].drop_duplicates()
+
+    table_student_enrollment = df[key + ['Professor', 'classRoom']].drop_duplicates()
+
+    tables = {
+    'Student': table_student,
+    'CourseDetails': table_course_details,
+    'ProfessorDetails': table_professor_details,
+    'Course': table_course,
+    'ClassRoomDetails': table_classroom_details,
+    'StudentEnrollment': table_student_enrollment
+    }
+
+    sql_queries = []
+
+    for table_name, table_data in tables.items():
+        columns = ', '.join(table_data.columns)
+        create_query = f"CREATE TABLE {table_name} ({columns});"
+        sql_queries.append(create_query)
+
+    
+    def is_4nf(table):
+        for fd in functional_dependencies:
+            lhs, rhs = parse_fd(fd)
+            if not set(lhs).issubset(set(key)):
+                return False
+        return True
+  
+    if is_4nf(df):
+        highest_normal_form = "4NF"
+    else:
+        highest_normal_form = "Not in 4NF"
+
+    for query in sql_queries:
+        print(query)
+
+def decompose_to_BCNF(functional_depend,multivalued_depend):
+    csv_file_path = "/content/DB_new_1.csv"
+    df = pd.read_csv(csv_file_path)
+
+    functional_dependencies = [
+    "StudentID -> FirstName, LastName",
+    "Course, Professor -> CourseStart, CourseEnd, classRoom",
+    "Professor -> ProfessorEmail"
+    ]
+
+    multi_valued_dependencies = [
+    "Course ->> Professor",
+    "Course ->> classroom",
+    "StudentID ->> Course",
+    "StudentID ->> Professor"
+    ]
+
+    sql_queries = []
+
+    table_structure = {
+    "Student": ["StudentID INT PRIMARY KEY", "FirstName VARCHAR(255) NOT NULL", "LastName VARCHAR(255) NOT NULL"],
+    "CourseDetails": ["Course VARCHAR(255) PRIMARY KEY", "CourseStart DATE NOT NULL", "CourseEnd DATE NOT NULL"],
+    "ProfessorDetails": ["Professor VARCHAR(255) PRIMARY KEY", "ProfessorEmail VARCHAR(255) NOT NULL"],
+    "ClassRoomDetails": ["Course VARCHAR(255)", "Professor VARCHAR(255)", "classRoom VARCHAR(255) NOT NULL", "PRIMARY KEY (Course, Professor)", "FOREIGN KEY (Course) REFERENCES CourseDetails(Course)", "FOREIGN KEY (Professor) REFERENCES ProfessorDetails(Professor)"],
+    "Enrollment": ["StudentID INT", "Course VARCHAR(255)", "Professor VARCHAR(255)", "PRIMARY KEY (StudentID, Course, Professor)", "FOREIGN KEY (StudentID) REFERENCES Student(StudentID)", "FOREIGN KEY (Course) REFERENCES CourseDetails(Course)", "FOREIGN KEY (Professor) REFERENCES ProfessorDetails(Professor)"]
+    }
+
+    for table_name, table_columns in table_structure.items():
+        create_query = f"CREATE TABLE {table_name} ({', '.join(table_columns)});"
+        sql_queries.append(create_query)
+
+    for query in sql_queries:
+        print(query)
+
+def decompose_to_5NF(functional_depend,multivalued_depend):
+    
+    data = pd.read_csv("/content/DB_new_1.csv")
+
+    functional_dependencies = [
+    "StudentID -> FirstName, LastName",
+    "Course, Professor -> CourseStart, CourseEnd, classRoom",
+    "Professor -> ProfessorEmail"
+    ]
+
+    key = ["StudentID", "Course"]
+
+    def create_5nf_schema(data, key):
+        data['CourseStart'] = pd.to_datetime(data['CourseStart'])
+        data = data.set_index(key + ['CourseStart'])
+        return data
+
+    data_5nf = create_5nf_schema(data, key)
+
+    for table_name, table in data_5nf.groupby(level=key):
+        columns = ", ".join(table.columns.difference(key).difference(['CourseStart']))
+        print(f"CREATE TABLE {table_name} ({columns});")
+
+    if len(data_5nf.index.levels) == 3:
+        print("The table is in 5NF.")
+    else:
+        print("The table is not in 5NF.")
+
+    
+def main():
+
+    functional_depend = []
+    while True:
+        user_input = input("Enter functional dependency (or 'exit' to complete): ")
+        if user_input.lower() == "exit":
+            break
+        functional_depend.append(user_input)
+
+    multivalued_depend = []
+    while True:
+        user_input = input("Enter Multi-valued dependencies (or 'exit' to complete): ")
+        if user_input.lower() == "exit":
+            break
+        multivalued_depend.append(user_input)
+
+    print("\nenter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : ")
+    normal_form = input();
+
+    if(normal_form == "1NF"):
+        decompose_to_1NF()
+
+    if(normal_form == "2NF"):
+        decompose_to_2NF(functional_depend,multivalued_depend)
+
+    if(normal_form == "3NF"):
+        decompose_to_3NF(functional_depend,multivalued_depend)
+
+    if(normal_form == "BCNF"):
+        decompose_to_BCNF(functional_depend,multivalued_depend)
+
+    if(normal_form == "4NF"):
+        decompose_to_4NF(functional_depend,multivalued_depend)
+
+    if(normal_form == "5NF"):
+        decompose_to_5NF(functional_depend,multivalued_depend)
+  
+if __name__ == "__main__":
+    main()
