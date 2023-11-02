@@ -1,0 +1,118 @@
+                                                   Outputs
+
+1NF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+1NF
+The table is already in 1NF.
+
+2 NF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+2NF
+CREATE TABLE Student (StudentID);
+CREATE TABLE CourseDetails (Course);
+CREATE TABLE ProfessorDetails (Professor);
+CREATE TABLE Enrollment (StudentID, Course);
+
+3 NF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+3NF
+CREATE TABLE Student (StudentID, FirstName, LastName);
+CREATE TABLE Course (Course, Professor, CourseStart, CourseEnd);
+CREATE TABLE Professor (Professor, ProfessorEmail);
+
+BCNF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+BCNF
+CREATE TABLE Student (StudentID INT PRIMARY KEY, FirstName VARCHAR(255) NOT NULL, LastName VARCHAR(255) NOT NULL);
+CREATE TABLE CourseDetails (Course VARCHAR(255) PRIMARY KEY, CourseStart DATE NOT NULL, CourseEnd DATE NOT NULL);
+CREATE TABLE ProfessorDetails (Professor VARCHAR(255) PRIMARY KEY, ProfessorEmail VARCHAR(255) NOT NULL);
+CREATE TABLE ClassRoomDetails (Course VARCHAR(255), Professor VARCHAR(255), classRoom VARCHAR(255) NOT NULL, PRIMARY KEY (Course, Professor), FOREIGN KEY (Course) REFERENCES CourseDetails(Course), FOREIGN KEY (Professor) REFERENCES ProfessorDetails(Professor));
+CREATE TABLE Enrollment (StudentID INT, Course VARCHAR(255), Professor VARCHAR(255), PRIMARY KEY (StudentID, Course, Professor), FOREIGN KEY (StudentID) REFERENCES Student(StudentID), FOREIGN KEY (Course) REFERENCES CourseDetails(Course), FOREIGN KEY (Professor) REFERENCES ProfessorDetails(Professor));
+
+4 NF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+4NF
+CREATE TABLE Student (StudentID, Course, FirstName, LastName);
+CREATE TABLE CourseDetails (StudentID, Course, CourseStart, CourseEnd);
+CREATE TABLE ProfessorDetails (Professor, ProfessorEmail);
+CREATE TABLE Course (Course);
+CREATE TABLE ClassRoomDetails (StudentID, Course, classRoom);
+CREATE TABLE StudentEnrollment (StudentID, Course, Professor, classRoom);
+
+5 NF Output:
+
+Enter functional dependency (or 'exit' to complete): StudentID -> FirstName, LastName
+Enter functional dependency (or 'exit' to complete): Course, Professor -> CourseStart, CourseEnd, classRoom
+Enter functional dependency (or 'exit' to complete): Professor -> ProfessorEmail
+Enter functional dependency (or 'exit' to complete): exit
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): Course ->> classroom
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Course
+Enter Multi-valued dependencies (or 'exit' to complete): StudentID ->> Professor
+Enter Multi-valued dependencies (or 'exit' to complete): exit
+
+enter the Normal form : (example 1NF,2NF,3NF,4NF,5NF,BCNF ) : 
+5NF
+CREATE TABLE (101, 'Math101') (CourseEnd, FirstName, LastName, Professor, ProfessorEmail, classRoom);
+CREATE TABLE (102, 'Math101') (CourseEnd, FirstName, LastName, Professor, ProfessorEmail, classRoom);
+CREATE TABLE (103, 'CS101') (CourseEnd, FirstName, LastName, Professor, ProfessorEmail, classRoom);
+CREATE TABLE (104, 'Bio101') (CourseEnd, FirstName, LastName, Professor, ProfessorEmail, classRoom);
+CREATE TABLE (105, 'CS101') (CourseEnd, FirstName, LastName, Professor, ProfessorEmail, classRoom);
+The table is in 5NF.
+
+
