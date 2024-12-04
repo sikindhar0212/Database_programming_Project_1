@@ -1,17 +1,4 @@
-Documentation for Database Normalization Code
 
-5300 – Database Systems
-
-Programming Project – 1 Documentation
-
-Group:
-
-1.	Sikindhar Reddy Gangidi
-2.	Jagadish Pasupuleti
-3.	Rohit Reddy Somu
-4.	Abijeeth Reddy Gorla
-5.	Praneeth Kumar Gantyada
-6.	
 Introduction:
 
 The provided code offers a suite of functions that decompose a dataset into different normal forms, specifically 1NF, 2NF, 3NF, BCNF, 4NF, and 5NF. Each function reads data from a CSV file, checks if it meets the conditions of the respective normal form, and prints out SQL queries to create the normalized tables.
